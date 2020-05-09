@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhuliangliang.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近在接入某厂广告系统，需要使用 Protobuf Buffers（以下简称 PB）来进行数据交换，而在此之前，我对 PB 一无所知，经历了版本冲突、插件无效等问题之后，总算成功在项目中集成 PB。下面主要介绍 PB 的安装、IDEA PB 插件配置、Java 项目中基本的使用等： PB 安装配置 下载 PB: 在 PB 官网，下载最新版（或者其他版本）PB，这里为了与 Java 项目中的 PB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 项目中集成 Protocol Buffers">
+<meta property="og:url" content="http://zhuliangliang.github.io/2015/01/12/protobuf_in_java/index.html">
+<meta property="og:site_name" content="朱亮亮">
+<meta property="og:description" content="最近在接入某厂广告系统，需要使用 Protobuf Buffers（以下简称 PB）来进行数据交换，而在此之前，我对 PB 一无所知，经历了版本冲突、插件无效等问题之后，总算成功在项目中集成 PB。下面主要介绍 PB 的安装、IDEA PB 插件配置、Java 项目中基本的使用等： PB 安装配置 下载 PB: 在 PB 官网，下载最新版（或者其他版本）PB，这里为了与 Java 项目中的 PB">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://zhuliangliang.github.io/img/proto_plugin.jpg">
+<meta property="og:image" content="http://zhuliangliang.github.io/img/protoc.jpg">
+<meta property="og:image" content="http://zhuliangliang.github.io/img/proto_dir.jpg">
+<meta property="article:published_time" content="2015-01-12T12:00:00.000Z">
+<meta property="article:modified_time" content="2020-05-09T08:16:16.279Z">
+<meta property="article:author" content="ZhuLiangliang">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://zhuliangliang.github.io/img/proto_plugin.jpg">
+
+<link rel="canonical" href="http://zhuliangliang.github.io/2015/01/12/protobuf_in_java/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Java 项目中集成 Protocol Buffers | 朱亮亮</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">朱亮亮</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay Hungry, Stay Foolish.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2015/01/12/protobuf_in_java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ZhuLiangliang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="朱亮亮">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 项目中集成 Protocol Buffers
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-01-12 20:00:00" itemprop="dateCreated datePublished" datetime="2015-01-12T20:00:00+08:00">2015-01-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近在接入某厂广告系统，需要使用 <a href="https://developers.google.com/protocol-buffers/" target="_blank" rel="noopener">Protobuf Buffers</a>（以下简称 PB）来进行数据交换，而在此之前，我对 PB 一无所知，经历了版本冲突、插件无效等问题之后，总算成功在项目中集成 PB。下面主要介绍 PB 的安装、IDEA PB 插件配置、Java 项目中基本的使用等：</p>
+<h3 id="PB-安装配置"><a href="#PB-安装配置" class="headerlink" title="PB 安装配置"></a>PB 安装配置</h3><ul>
+<li>下载 PB: 在 <a href="https://developers.google.com/protocol-buffers/docs/downloads" target="_blank" rel="noopener">PB 官网</a>，下载最新版（或者其他版本）PB，这里为了与 Java 项目中的 PB Maven 依赖版本一致，使用 PB 2.5.0 版本。</li>
+<li>安装 PB:<ul>
+<li>解压：<code>tar zxvf protobuf-2.5.0.tar.gz</code>，使用 <code>cd</code> 命令进入 <code>protobuf-2.5.0</code> 目录。</li>
+<li>./configure，通常建议加上 <code>--prefix</code> 参数来指定目录，例如:<br><code>./configure  --prefix=/usr/local/Cellar/protobuf/2.5.0</code></li>
+<li>make，如出现 <code>make: Nothing to be done for all</code> 错误提示，表示 PB 已经被编译好了，如需重新编译，可以先用 <code>make clean</code> 命令删除已经编译好的文件。</li>
+<li>make check</li>
+<li>make install<a id="more"></a></li>
+</ul>
+</li>
+<li>设置环境变量: 编辑 <code>/etc/profile</code>，在文件末尾加入：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export PATH=$PATH:/usr/local/Cellar/protobuf/2.5.0/bin</span><br><span class="line">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/Cellar/protobuf/2.5.0/lib</span><br></pre></td></tr></table></figure>
+<p>至此，PB已经成功安装完毕，可以使用 <code>protoc --version</code> 命令来验证是否安装成功，如果出现如下结果，则表示 PB 已经安装成功并且生效。</p>
+<pre><code>libprotoc 2.5.0</code></pre><h3 id="Intellij-IDEA-安装-Protobuf-插件"><a href="#Intellij-IDEA-安装-Protobuf-插件" class="headerlink" title="Intellij IDEA 安装 Protobuf 插件"></a>Intellij IDEA 安装 Protobuf 插件</h3><p>通常我们在编写好 PB 文件之后，需要使用 <code>protoc</code> 来将 PB 文件编译成对应的代码，在命令行里面我们可以使用如下命令来生成对应的 Java 文件：</p>
+<pre><code>protoc --proto_path=src --java_out=build/gen src/me.zhuliangliang    </code></pre><p>当我们有非常多的 PB 描述文件之后，如果每个文件都单独使用命令行来编译（尽管可以使用脚本来快速实现，但又将会面临拷贝 Java 文件等恼火的操作）。是否有这样一个工具：在 IDE 中编写 PB 文件之后，可以在指定 package 下一键生成对应的 Java 文件，方便对 Java 文件的管理。<a href="https://code.google.com/p/protobuf/" target="_blank" rel="noopener">Google Protocol Buffers support</a> 就是有着上诉功能的 IDEA 插件。</p>
+<ul>
+<li><p>安装 PB 插件。进入 IDEA 设置中心，打开 <code>Plugins</code>，点击 <code>Browse repositories</code>，搜索 <code>protocol buffer</code> 安装插件，如下图所示。安装好 PB 插件之后，需要重启 IDEA。<br><img src="/img/proto_plugin.jpg" alt="安装 PB 插件"></p>
+</li>
+<li><p>配置路径。PB 插件安装完毕之后，需要为插件配置 PB 的编译路径，也就是在上一步中我们安装的 <code>protoc</code>。<br><img src="/img/protoc.jpg" alt="PB 路径配置"></p>
+</li>
+</ul>
+<p>至此，IDEA PB 插件安装完成，下面介绍如何在项目中使用 PB 插件来快速生成 Java 文件。</p>
+<h3 id="Java-PB-Demo"><a href="#Java-PB-Demo" class="headerlink" title="Java PB Demo"></a>Java PB Demo</h3><ul>
+<li><p>新建 Maven 项目，配置 PB 生成 Java 文件的目录：进入 <code>Project Settings</code>，填写 <code>Output source directory</code>，这里的目录就是项目的 <code>Java source</code> 目录。<br><img src="/img/proto_dir.jpg" alt="编译路径配置"></p>
+</li>
+<li><p>根据 PB 描述文件，生成 Java 文件。在 PB 文件中右键，从菜单中选择 <code>Compile ‘person.proto’</code>，就能生成对应的 Java 文件。</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">option java_package = <span class="string">"me.zhuliangliang.proto"</span>;</span><br><span class="line">option java_outer_classname = <span class="string">"PersonModel"</span>;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">    required int32 id = <span class="number">1</span>;</span><br><span class="line">    required string name = <span class="number">2</span>;</span><br><span class="line">    optional string email = <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>加入 Maven 依赖。在 pom.xml 文件中加入如下依赖：</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.google.protobuf<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>protobuf-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>编写测试用例<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestPersonModel</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testProto</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        PersonModel.Person person = PersonModel.Person.newBuilder()</span><br><span class="line">                .setId(<span class="number">100</span>).setName(<span class="string">"zhuliangliang"</span>)</span><br><span class="line">                .setEmail(<span class="string">"zhuliangliang.me"</span>).build();</span><br><span class="line">        System.out.println(person);</span><br><span class="line">        Assert.assertEquals(<span class="number">100</span>, person.getId());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+Demo github 地址：<a href="https://github.com/zhuliangliang/protoDemo" target="_blank" rel="noopener">https://github.com/zhuliangliang/protoDemo</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2013/11/14/aws_mail_exception/" rel="prev" title="使用Amazon SDK发送邮件异常">
+      <i class="fa fa-chevron-left"></i> 使用Amazon SDK发送邮件异常
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/02/hexo_theme_next/" rel="next" title="博客使用新的主题">
+      博客使用新的主题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#PB-安装配置"><span class="nav-number">1.</span> <span class="nav-text">PB 安装配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Intellij-IDEA-安装-Protobuf-插件"><span class="nav-number">2.</span> <span class="nav-text">Intellij IDEA 安装 Protobuf 插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-PB-Demo"><span class="nav-number">3.</span> <span class="nav-text">Java PB Demo</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ZhuLiangliang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhuliangliang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhuliangliang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZhuLiangliang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

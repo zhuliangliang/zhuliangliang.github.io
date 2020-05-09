@@ -1,0 +1,27 @@
+date: 2014-11-18 14:13:23.519
+argv: node /Users/zhuliangliang/.nvm/v0.10.20/bin/hexo server
+os: Darwin 13.4.0 darwin x64
+version:
+  hexo: 2.2.1
+  http_parser: 1.0
+  node: 0.10.20
+  v8: 3.14.5.9
+  ares: 1.9.0-DEV
+  uv: 0.10.17
+  zlib: 1.2.3
+  modules: 11
+  openssl: 1.0.1e
+---
+
+[error] 14:13:23.513 TypeError: Cannot read property 'handle' of undefined
+TypeError: Cannot read property 'handle' of undefined
+    at Function.app.use (/Users/zhuliangliang/.nvm/v0.10.20/lib/node_modules/hexo/node_modules/express/lib/application.js:113:9)
+    at module.exports (/Users/zhuliangliang/.nvm/v0.10.20/lib/node_modules/hexo/lib/plugins/console/server/index.js:121:7)
+    at /Users/zhuliangliang/.nvm/v0.10.20/lib/node_modules/hexo/lib/core.js:118:9
+    at b (domain.js:183:18)
+    at Domain.run (domain.js:123:23)
+    at Hexo.call (/Users/zhuliangliang/.nvm/v0.10.20/lib/node_modules/hexo/lib/core.js:117:9)
+    at /Users/zhuliangliang/.nvm/v0.10.20/lib/node_modules/hexo/lib/init.js:263:10
+    at /Users/zhuliangliang/.nvm/v0.10.20/lib/node_modules/hexo/node_modules/async/lib/async.js:422:17
+    at /Users/zhuliangliang/.nvm/v0.10.20/lib/node_modules/hexo/node_modules/async/lib/async.js:416:17
+    at Array.forEach (native)
