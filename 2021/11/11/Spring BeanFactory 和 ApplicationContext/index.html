@@ -28,8 +28,9 @@
 <meta property="og:description" content="Spring 的 BeanFactory 和 ApplicationContext 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。 BeanFactoryBeanFactory 在 Spring-Beans 模块中，是整个 Spring 容器的核心，也正是 BeanFactory 才让 Spring 成为一个容器，帮助 Spring 管理 Bean，并提供 DI 功能实现对 B">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211109160858.png">
+<meta property="og:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext%20%E4%B8%BB%E8%A6%81%E6%8E%A5%E5%8F%A3.png">
 <meta property="article:published_time" content="2021-11-11T11:00:00.000Z">
-<meta property="article:modified_time" content="2021-11-12T07:44:32.513Z">
+<meta property="article:modified_time" content="2021-11-12T07:48:26.006Z">
 <meta property="article:author" content="ZhuLiangliang">
 <meta property="article:tag" content="Spring">
 <meta name="twitter:card" content="summary">
@@ -237,7 +238,8 @@
 <li>基础的容器服务。扩展自 <code>ListableBeanFactory</code> 和 <code>HierarchicalBeanFactory</code></li>
 </ol>
 <p>其主要接口和类的关系如下图：</p>
-<p>![](<a href="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext" target="_blank" rel="noopener">https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext</a> 主要接口.png)</p>
+<img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext 主要接口.png" style="zoom:50%;" />
+
 <p>由上图可以看出，ApplicationContext 主要分为两大类：Xml ApplicationContext 和 Web ApplicationContext。其中主要的类说明如下：</p>
 <ol>
 <li><code>ApplicationContext</code> 是整个容器的基本功能定义类，继承了 BeanFactory，这说明容器也是工厂的多态实现。设计模式上采用了代理模式，内部持有一个 BeanFactory 实例，这个实例替它执行 BeanFactory 接口定义的功能。</li>

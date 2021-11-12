@@ -230,7 +230,8 @@
 <li>基础的容器服务。扩展自 <code>ListableBeanFactory</code> 和 <code>HierarchicalBeanFactory</code></li>
 </ol>
 <p>其主要接口和类的关系如下图：</p>
-<p>![](<a href="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext" target="_blank" rel="noopener">https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext</a> 主要接口.png)</p>
+<img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext 主要接口.png" style="zoom:50%;" />
+
 <p>由上图可以看出，ApplicationContext 主要分为两大类：Xml ApplicationContext 和 Web ApplicationContext。其中主要的类说明如下：</p>
 <ol>
 <li><code>ApplicationContext</code> 是整个容器的基本功能定义类，继承了 BeanFactory，这说明容器也是工厂的多态实现。设计模式上采用了代理模式，内部持有一个 BeanFactory 实例，这个实例替它执行 BeanFactory 接口定义的功能。</li>
