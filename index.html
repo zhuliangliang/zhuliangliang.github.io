@@ -210,36 +210,14 @@
       
           <p>Spring 的 <code>BeanFactory</code> 和 <code>ApplicationContext</code> 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。</p>
 <h3 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h3><p><code>BeanFactory</code> 在 Spring-Beans 模块中，是整个 Spring 容器的核心，也正是 <code>BeanFactory</code> 才让 Spring 成为一个容器，帮助 Spring 管理 Bean，并提供 DI 功能实现对 Bean 的依赖管理，使用配置方式来达到与业务代码和框架代码的分离。其主要的接口和类关系如下所示：</p>
-<img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211109160858.png" style="zoom:50%;" />
-
-<p><code>BeanFactory</code> 接口是 Bean 容器设计中基本的职责定义接口，定义按照名称、类型、参数几个维度获取、判断 Bean 实例的职能</p>
-<p><code>HierarchicalBeanFactory</code> 对<code>BeanFactory</code> 进行了扩展，定义了获取父容器和判断 Bean 是否在当前容器方法</p>
-<p><code>ListableBeanFactory</code> 实现了对 Bean 的枚举，以及对某些共有特征 Bean 的管理</p>
-<p><code>AutowireCapableBeanFactory</code>提供了 Bean 的创建、注入、Bean 创建前后扩展等职能，主要职责是处理当前容器的 Bean，使其达到可用状态</p>
-<p><code>ConfigurableBeanFactory</code> 提供了设置父容器、指定类加载器接口，并且为当前容器工厂设计 Bean 的定制型的解析处理器、类型处理器，主要目的是实现对 BeanFactory 的可配置性</p>
-<p><code>ConfigurableListableBeanFactory</code> 除了集成<code>ListBeanFactory</code>、<code>AutowireCapableBeanFactory</code>、<code>ConfigurableBeanFactory</code> 这些接口的所有职能，还扩展了修改 Bean 定义信息和分析Bean的功能，并且实现了预实例化单例Bean及冻结当前工厂配置等功能</p>
-<p><code>AbstractBeanFactory</code> 是一个抽象类，实现了对基本容器功能定义的模板式封装和实现，同时实现对 Bean 信息的注册，但是对 Bean 的创建和定义描述信息等的处理使用了抽象化处理，交由子类实现</p>
-<p><code>AbstractAutowireCapableBeanFactory</code> 继承自 <code>AbstractBeanFactory</code>，主要解决 Bean 之间的依赖和注入问题，其中实现了 Bean 的创建方法，但 Bean 定义以及依赖关系并没有实现</p>
-<p><code>DefaultListableBeanFactory</code>继承自 <code>AbstractAutowireCapableBeanFactory</code>，是对 Bean 容器完全成熟的默认实现，可以直接对外使用</p>
-<h3 id="ApplicationContext"><a href="#ApplicationContext" class="headerlink" title="ApplicationContext"></a>ApplicationContext</h3><p><code>ApplicationContext</code> 在 Spring-Context 模块中，是 Spring 上下文的核心。和 <code>BeanFactory</code> 类似，<code>ApplicationContext</code> 也能加载配置文件中定义的 Bean，将所有的 Bean 集中管理。同时，它增加了许多额外的功能</p>
-<ol>
-<li>支持不同的信息源。扩展自 <code>MessageSource</code>，能够提供多信息源的支持</li>
-<li>访问资源。扩展自 <code>ResourcePatternResolver</code>，可以从不同的地方获得 Bean</li>
-<li>支持应用事件。扩展自 <code>ApplicationEventPublisher</code>，为应用环境引入事件机制</li>
-<li>环境服务。扩展自 <code>EnvironmentCapable</code>，支持环境的配置获取</li>
-<li>基础的容器服务。扩展自 <code>ListableBeanFactory</code> 和 <code>HierarchicalBeanFactory</code></li>
-</ol>
-<p>其主要接口和类的关系如下图：</p>
-<img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext 主要接口.png" style="zoom:50%;" />
-
-<p>由上图可以看出，ApplicationContext 主要分为两大类：Xml ApplicationContext 和 Web ApplicationContext。其中主要的类说明如下：</p>
-<ol>
-<li><code>ApplicationContext</code> 是整个容器的基本功能定义类，继承了 BeanFactory，这说明容器也是工厂的多态实现。设计模式上采用了代理模式，内部持有一个 BeanFactory 实例，这个实例替它执行 BeanFactory 接口定义的功能。</li>
-<li><code>AbstractApplicationContext</code> 是整个上下文容器的核心处理类，是真正容器的执行者，在内部使用了模板方法，实现了 Spring 的启动、停止、刷新、事件推送、BeanFactory 的默认实现以及虚拟机的注册回调等。</li>
-<li><code>GenericApplicationContext</code> 是 Spring Context 中最容易构建 Spring 环境的实体类，涵盖了 Spring Context 中的核心功能，在某些不需要特别定制的场景中可以直接开箱使用。</li>
-<li><code>AbstractRefreshableApplicationContext</code>是 <code>XmlWebApplicationContext</code>的核心父类，如果当前上下文持有BeanFactory，则关闭当前BeanFactory，然后为上下文生命周期的下一个阶段初始化一个新的BeanFactory，并且在创建新容器时仍然保持对其父容器的引用。</li>
-</ol>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/11/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
