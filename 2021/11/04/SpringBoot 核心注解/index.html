@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhuliangliang.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="我们在写 SpringBoot 程序的时候，总要写一个主程序，这个主程序最大的特点就是在其类上包含了一个@SpringBootApplication注解，这个正式 SpringBoot 的核心。 @SpringBootApplication 注解是一个组合注解，主要包含如下三个注解 123@SpringBootConfiguration@EnableAutoConfiguration@Compon">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot 核心注解">
+<meta property="og:url" content="http://zhuliangliang.github.io/2021/11/04/SpringBoot%20%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3/index.html">
+<meta property="og:site_name" content="朱亮亮">
+<meta property="og:description" content="我们在写 SpringBoot 程序的时候，总要写一个主程序，这个主程序最大的特点就是在其类上包含了一个@SpringBootApplication注解，这个正式 SpringBoot 的核心。 @SpringBootApplication 注解是一个组合注解，主要包含如下三个注解 123@SpringBootConfiguration@EnableAutoConfiguration@Compon">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211108102916.png">
+<meta property="article:published_time" content="2021-11-04T12:00:00.000Z">
+<meta property="article:modified_time" content="2021-11-11T03:51:48.698Z">
+<meta property="article:author" content="ZhuLiangliang">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211108102916.png">
+
+<link rel="canonical" href="http://zhuliangliang.github.io/2021/11/04/SpringBoot%20%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SpringBoot 核心注解 | 朱亮亮</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">朱亮亮</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay Hungry, Stay Foolish.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/04/SpringBoot%20%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="ZhuLiangliang">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="朱亮亮">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot 核心注解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-04 20:00:00" itemprop="dateCreated datePublished" datetime="2021-11-04T20:00:00+08:00">2021-11-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>我们在写 SpringBoot 程序的时候，总要写一个主程序，这个主程序最大的特点就是在其类上包含了一个<code>@SpringBootApplication</code>注解，这个正式 SpringBoot 的核心。</p>
+<p><code>@SpringBootApplication</code> 注解是一个组合注解，主要包含如下三个注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span></span><br><span class="line"><span class="meta">@ComponentScan</span></span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>@SpringBootConfiguration</code> 注解包含 <code>@Configuration</code> 注解，实际上两者基本没啥区别。SpringBoot 推荐使用 JavaConfig 的方式为 SpringBoot 来配置容器。启动类使用 <code>@Configuration</code> 注解标记之后，本身就是一个 IoC 容器的配置类了。</p>
+<a id="more"></a>
+
+<h3 id="Configuration"><a href="#Configuration" class="headerlink" title="@Configuration"></a><code>@Configuration</code></h3><p>以前我们使用 xml 来配置 Bean，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">default-lazy-init</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--bean定义--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"myBean"</span> <span class="attr">class</span>=<span class="string">"com.example.MyBean"</span>&gt;</span><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用 JavaConfig 方式配置则如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppConfiguration</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">MyBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MyBean();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>任何一个使用 <code>@Bean</code> 标注的方法，其返回值将作为一个 Bean 定义注册到容器当中，id 为方法名。</p>
+<p>使用 JavaConfig 也能表示 Bean 的依赖关系。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppConfiguration</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> MyBean <span class="title">createMyBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MyBean();</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> MyService <span class="title">createService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> MyService(createMyBean());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：<code>@Configuration</code> 注解可以作为 Spring IoC 容器 Bean定义 的来源，<code>@Bean</code> 注解则定义了一个需要注册到 Spring 容器的对象。</p>
+<h3 id="ComponentScan"><a href="#ComponentScan" class="headerlink" title="@ComponentScan"></a>@ComponentScan</h3><p><code>@ComponentScan</code> 用于自动扫描并加载符合条件的组件（使用 <code>@Component</code>，<code>@Service</code>，<code>@Repository</code> 标记的类）或者 Bean 定义，最终将这些组件加载到 Spring 容器中。我们可以通过 <code>basePackages</code>等属性来定制需要扫描的包。如果不指定，则默认 Spring 框架从声明<code>@ComponentScan</code>类的 package进行扫描。</p>
+<p><code>@ComponentScan</code>有两个属性需要注意下：</p>
+<ol>
+<li>includeFilters，表示要扫描哪些类型的包，如果 useDefaultFilters 设置为 false，则只扫描 includeFilters 指定的包</li>
+<li>excludeFilters，表示要排除哪些类型的包。</li>
+</ol>
+<h3 id="EnableAutoConfiguration"><a href="#EnableAutoConfiguration" class="headerlink" title="@EnableAutoConfiguration"></a>@EnableAutoConfiguration</h3><p><code>@EnableAutoConfiguration</code>注解上的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(&#123;ElementType.TYPE&#125;)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@AutoConfigurationPackage</span></span><br><span class="line"><span class="meta">@Import</span>(&#123;AutoConfigurationImportSelector<span class="class">.<span class="keyword">class</span>&#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> @<span class="title">interface</span> <span class="title">EnableAutoConfiguration</span> </span>&#123;</span><br><span class="line">  String ENABLED_OVERRIDE_PROPERTY = <span class="string">"spring.boot.enableautoconfiguration"</span>;</span><br><span class="line"></span><br><span class="line">  Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">  String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，比较重要的注解是<code>@Import({AutoConfigurationImportSelector.class})</code>，有了这个注解，<code>@EnableAutoConfiguration</code>就能根据类路径中 jar 的依赖进行自动检查，例如：添加了 spring-boot-starter-web 依赖，会自动添加 Tomcat 和 SpringMVC 的依赖，Spring Boot 会对 Tomcat 和 Spring MVC 进行自动配置。其中起作用的主要是 AutoConfigurationImportSelector 这个类，它帮助 SpringBoot 应用将符合条件的 <code>@Configuration</code> 配置都加载到 SpringBoot  容器中。</p>
+<p>AutoConfigurationImportSelector 依赖 SpringFactoriesLoader（在 Spring-Core 中） 来加载配置，它的主要功能就是从指定配置 META/spring.factories 加载配置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringFactoriesLoader</span> </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">		<span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">List&lt;T&gt; <span class="title">loadFactories</span><span class="params">(Class&lt;T&gt; factoryType, @Nullable ClassLoader classLoader)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">loadFactoryNames</span><span class="params">(Class&lt;?&gt; factoryType, @Nullable ClassLoader classLoader)</span> </span>&#123;</span><br><span class="line">        ....</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>spring.factories 的主要配置如下：</p>
+<p><img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211108102916.png" alt=""></p>
+<p>这里 EnableAutoConfiguration 包含了非常多的自动配置项，如：jdbc、redis 等。我们可以看看我们熟悉的<code>KafkaAutoConfiguration</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span>(proxyBeanMethods = <span class="keyword">false</span>)</span><br><span class="line"><span class="meta">@ConditionalOnClass</span>(KafkaTemplate<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">EnableConfigurationProperties</span>(<span class="title">KafkaProperties</span>.<span class="title">class</span>)</span></span><br><span class="line"><span class="class">@<span class="title">Import</span>(</span>&#123; KafkaAnnotationDrivenConfiguration<span class="class">.<span class="keyword">class</span>, <span class="title">KafkaStreamsAnnotationDrivenConfiguration</span>.<span class="title">class</span> &#125;)</span></span><br><span class="line"><span class="class"><span class="title">public</span> <span class="title">class</span> <span class="title">KafkaAutoConfiguration</span> </span>&#123;</span><br><span class="line">  ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>几个主要的注解说明如下：</p>
+<ol>
+<li><code>@Configuration</code>，如上文介绍，标明这个类是一个配置类，自动加载类中 <code>@Bean</code> </li>
+<li><code>@ConditionalOnClass</code>，这个注解可以输入一个或多个 Class，相当于一个开关，当检测到存在输入的类时，该配置生效，否则将不实例化。一个典型的场景，如果在项目 pom  中加入 <code>spring-boot-starter-web</code>依赖，那么在启动 spring 的时候会检测到 web 相关的 Config，服务就会以 web 的形式启动。</li>
+<li><code>@EnableConfigurationProperties</code> ，这个注解使<code>@ConfigurationProperties</code>注解生效。通常括号内的类就含有 <code>@ConfigurationProperties</code>注解，并且一般会指定一个 prefix，例如 spring.kafka，对应 application.yaml 中 spring.kaka 相关的配置。</li>
+<li><code>@Import({ KafkaAnnotationDrivenConfiguration.class, KafkaStreamsAnnotationDrivenConfiguration.class })</code>，这个注解用于导入使用<code>@Configuration</code>标注的配置类。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/01/SpringBoot%20%E4%BE%9D%E8%B5%96/" rel="prev" title="SpringBoot pom 依赖">
+      <i class="fa fa-chevron-left"></i> SpringBoot pom 依赖
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/07/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/" rel="next" title="Spring BeanFactory 和 ApplicationContext">
+      Spring BeanFactory 和 ApplicationContext <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuration"><span class="nav-number">1.</span> <span class="nav-text">@Configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ComponentScan"><span class="nav-number">2.</span> <span class="nav-text">@ComponentScan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EnableAutoConfiguration"><span class="nav-number">3.</span> <span class="nav-text">@EnableAutoConfiguration</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">ZhuLiangliang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ZhuLiangliang</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

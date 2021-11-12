@@ -20,20 +20,21 @@
     var CONFIG = {"hostname":"zhuliangliang.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Mac 上 Catalina 的更新提示了很久，决定今天更新下，但发现更新完毕后，使用 Alfred 的时候，同一个 app 会出现在不同的目录： &#x2F;System&#x2F;Volumes&#x2F;Data&#x2F;Applications  &#x2F;Applications 解决办法如下：在 Alfred 中输入 reload 重新加载即可。">
+  <meta name="description" content="Spring ApplicationContext 和 BeanFactorySpring 的 BeanFactory 和 ApplicationContext 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。 BeanFactoryBeanFactory 在 Spring-Beans 模块中，是整个 Spring 容器的核心，也正是 BeanFactory 才让 Spring">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MacOS Cataline Alfred 出现相同的 app">
-<meta property="og:url" content="http://zhuliangliang.github.io/2020/05/10/catalina-alfred-multiple-apps/index.html">
+<meta property="og:title" content="Spring BeanFactory 和 ApplicationContext">
+<meta property="og:url" content="http://zhuliangliang.github.io/2021/11/07/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/index.html">
 <meta property="og:site_name" content="朱亮亮">
-<meta property="og:description" content="Mac 上 Catalina 的更新提示了很久，决定今天更新下，但发现更新完毕后，使用 Alfred 的时候，同一个 app 会出现在不同的目录： &#x2F;System&#x2F;Volumes&#x2F;Data&#x2F;Applications  &#x2F;Applications 解决办法如下：在 Alfred 中输入 reload 重新加载即可。">
+<meta property="og:description" content="Spring ApplicationContext 和 BeanFactorySpring 的 BeanFactory 和 ApplicationContext 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。 BeanFactoryBeanFactory 在 Spring-Beans 模块中，是整个 Spring 容器的核心，也正是 BeanFactory 才让 Spring">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-05-10T02:00:00.000Z">
-<meta property="article:modified_time" content="2021-11-11T03:38:57.952Z">
+<meta property="og:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211109160858.png">
+<meta property="article:published_time" content="2021-11-07T05:04:35.638Z">
+<meta property="article:modified_time" content="2021-11-12T07:42:34.660Z">
 <meta property="article:author" content="ZhuLiangliang">
-<meta property="article:tag" content="Mac">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211109160858.png">
 
-<link rel="canonical" href="http://zhuliangliang.github.io/2020/05/10/catalina-alfred-multiple-apps/">
+<link rel="canonical" href="http://zhuliangliang.github.io/2021/11/07/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/">
 
 
 <script id="page-configurations">
@@ -46,7 +47,7 @@
   };
 </script>
 
-  <title>MacOS Cataline Alfred 出现相同的 app | 朱亮亮</title>
+  <title>Spring BeanFactory 和 ApplicationContext | 朱亮亮</title>
   
 
 
@@ -167,7 +168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2020/05/10/catalina-alfred-multiple-apps/">
+    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/07/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -180,7 +181,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          MacOS Cataline Alfred 出现相同的 app
+          Spring BeanFactory 和 ApplicationContext
         </h1>
 
         <div class="post-meta">
@@ -190,16 +191,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-05-10 10:00:00" itemprop="dateCreated datePublished" datetime="2020-05-10T10:00:00+08:00">2020-05-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E8%B0%88/" itemprop="url" rel="index"><span itemprop="name">杂谈</span></a>
-                </span>
+              <time title="创建时间：2021-11-07 13:04:35" itemprop="dateCreated datePublished" datetime="2021-11-07T13:04:35+08:00">2021-11-07</time>
             </span>
 
           
@@ -213,10 +205,36 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Mac 上 Catalina 的更新提示了很久，决定今天更新下，但发现更新完毕后，使用 Alfred 的时候，同一个 app 会出现在不同的目录：</p>
-<p><code>/System/Volumes/Data/Applications</code> </p>
-<p><code>/Applications</code></p>
-<p>解决办法如下：在 Alfred 中输入 <code>reload</code> 重新加载即可。</p>
+        <h3 id="Spring-ApplicationContext-和-BeanFactory"><a href="#Spring-ApplicationContext-和-BeanFactory" class="headerlink" title="Spring ApplicationContext 和 BeanFactory"></a>Spring ApplicationContext 和 BeanFactory</h3><p>Spring 的 <code>BeanFactory</code> 和 <code>ApplicationContext</code> 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。</p>
+<h3 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h3><p><code>BeanFactory</code> 在 Spring-Beans 模块中，是整个 Spring 容器的核心，也正是 <code>BeanFactory</code> 才让 Spring 成为一个容器，帮助 Spring 管理 Bean，并提供 DI 功能实现对 Bean 的依赖管理，使用配置方式来达到与业务代码和框架代码的分离。其主要的接口和类关系如下所示：</p>
+<img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211109160858.png" style="zoom:50%;" />
+
+<p><code>BeanFactory</code> 接口是 Bean 容器设计中基本的职责定义接口，定义按照名称、类型、参数几个维度获取、判断 Bean 实例的职能</p>
+<p><code>HierarchicalBeanFactory</code> 对<code>BeanFactory</code> 进行了扩展，定义了获取父容器和判断 Bean 是否在当前容器方法</p>
+<p><code>ListableBeanFactory</code> 实现了对 Bean 的枚举，以及对某些共有特征 Bean 的管理</p>
+<p><code>AutowireCapableBeanFactory</code>提供了 Bean 的创建、注入、Bean 创建前后扩展等职能，主要职责是处理当前容器的 Bean，使其达到可用状态</p>
+<p><code>ConfigurableBeanFactory</code> 提供了设置父容器、指定类加载器接口，并且为当前容器工厂设计 Bean 的定制型的解析处理器、类型处理器，主要目的是实现对 BeanFactory 的可配置性</p>
+<p><code>ConfigurableListableBeanFactory</code> 除了集成<code>ListBeanFactory</code>、<code>AutowireCapableBeanFactory</code>、<code>ConfigurableBeanFactory</code> 这些接口的所有职能，还扩展了修改 Bean 定义信息和分析Bean的功能，并且实现了预实例化单例Bean及冻结当前工厂配置等功能</p>
+<p><code>AbstractBeanFactory</code> 是一个抽象类，实现了对基本容器功能定义的模板式封装和实现，同时实现对 Bean 信息的注册，但是对 Bean 的创建和定义描述信息等的处理使用了抽象化处理，交由子类实现</p>
+<p><code>AbstractAutowireCapableBeanFactory</code> 继承自 <code>AbstractBeanFactory</code>，主要解决 Bean 之间的依赖和注入问题，其中实现了 Bean 的创建方法，但 Bean 定义以及依赖关系并没有实现</p>
+<p><code>DefaultListableBeanFactory</code>继承自 <code>AbstractAutowireCapableBeanFactory</code>，是对 Bean 容器完全成熟的默认实现，可以直接对外使用</p>
+<h3 id="ApplicationContext"><a href="#ApplicationContext" class="headerlink" title="ApplicationContext"></a>ApplicationContext</h3><p><code>ApplicationContext</code> 在 Spring-Context 模块中，是 Spring 上下文的核心。和 <code>BeanFactory</code> 类似，<code>ApplicationContext</code> 也能加载配置文件中定义的 Bean，将所有的 Bean 集中管理。同时，它增加了许多额外的功能</p>
+<ol>
+<li>支持不同的信息源。扩展自 <code>MessageSource</code>，能够提供多信息源的支持</li>
+<li>访问资源。扩展自 <code>ResourcePatternResolver</code>，可以从不同的地方获得 Bean</li>
+<li>支持应用事件。扩展自 <code>ApplicationEventPublisher</code>，为应用环境引入事件机制</li>
+<li>环境服务。扩展自 <code>EnvironmentCapable</code>，支持环境的配置获取</li>
+<li>基础的容器服务。扩展自 <code>ListableBeanFactory</code> 和 <code>HierarchicalBeanFactory</code></li>
+</ol>
+<p>其主要接口和类的关系如下图：</p>
+<p>![](<a href="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext" target="_blank" rel="noopener">https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/ApplicationContext</a> 主要接口.png)</p>
+<p>由上图可以看出，ApplicationContext 主要分为两大类：Xml ApplicationContext 和 Web ApplicationContext。其中主要的类说明如下：</p>
+<ol>
+<li><code>ApplicationContext</code> 是整个容器的基本功能定义类，继承了 BeanFactory，这说明容器也是工厂的多态实现。设计模式上采用了代理模式，内部持有一个 BeanFactory 实例，这个实例替它执行 BeanFactory 接口定义的功能。</li>
+<li><code>AbstractApplicationContext</code> 是整个上下文容器的核心处理类，是真正容器的执行者，在内部使用了模板方法，实现了 Spring 的启动、停止、刷新、事件推送、BeanFactory 的默认实现以及虚拟机的注册回调等。</li>
+<li><code>GenericApplicationContext</code> 是 Spring Context 中最容易构建 Spring 环境的实体类，涵盖了 Spring Context 中的核心功能，在某些不需要特别定制的场景中可以直接开箱使用。</li>
+<li><code>AbstractRefreshableApplicationContext</code>是 <code>XmlWebApplicationContext</code>的核心父类，如果当前上下文持有BeanFactory，则关闭当前BeanFactory，然后为上下文生命周期的下一个阶段初始化一个新的BeanFactory，并且在创建新容器时仍然保持对其父容器的引用。</li>
+</ol>
 
     </div>
 
@@ -225,9 +243,6 @@
     
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/Mac/" rel="tag"># Mac</a>
-          </div>
 
         
 
@@ -235,13 +250,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/05/02/hexo_theme_next/" rel="prev" title="博客使用新的主题">
-      <i class="fa fa-chevron-left"></i> 博客使用新的主题
+    <a href="/2021/11/04/SpringBoot%20%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3/" rel="prev" title="SpringBoot 核心注解">
+      <i class="fa fa-chevron-left"></i> SpringBoot 核心注解
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/09/08/go_get_problem/" rel="next" title="go get installing executables with 'go get' in module mode is deprecated.">
-      go get installing executables with 'go get' in module mode is deprecated. <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -300,6 +312,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-ApplicationContext-和-BeanFactory"><span class="nav-number">1.</span> <span class="nav-text">Spring ApplicationContext 和 BeanFactory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BeanFactory"><span class="nav-number">2.</span> <span class="nav-text">BeanFactory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ApplicationContext"><span class="nav-number">3.</span> <span class="nav-text">ApplicationContext</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
