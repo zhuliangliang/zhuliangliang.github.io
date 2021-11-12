@@ -161,7 +161,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/07/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/">
+    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/11/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -175,7 +175,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/07/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/" class="post-title-link" itemprop="url">Spring BeanFactory 和 ApplicationContext</a>
+            <a href="/2021/11/11/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/" class="post-title-link" itemprop="url">Spring ApplicationContext 和 BeanFactory</a>
         </h2>
 
         <div class="post-meta">
@@ -185,7 +185,16 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-11-07 13:04:35" itemprop="dateCreated datePublished" datetime="2021-11-07T13:04:35+08:00">2021-11-07</time>
+              <time title="创建时间：2021-11-11 19:00:00" itemprop="dateCreated datePublished" datetime="2021-11-11T19:00:00+08:00">2021-11-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
+                </span>
             </span>
 
           
@@ -199,7 +208,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="Spring-ApplicationContext-和-BeanFactory"><a href="#Spring-ApplicationContext-和-BeanFactory" class="headerlink" title="Spring ApplicationContext 和 BeanFactory"></a>Spring ApplicationContext 和 BeanFactory</h3><p>Spring 的 <code>BeanFactory</code> 和 <code>ApplicationContext</code> 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。</p>
+          <p>Spring 的 <code>BeanFactory</code> 和 <code>ApplicationContext</code> 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。</p>
 <h3 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h3><p><code>BeanFactory</code> 在 Spring-Beans 模块中，是整个 Spring 容器的核心，也正是 <code>BeanFactory</code> 才让 Spring 成为一个容器，帮助 Spring 管理 Bean，并提供 DI 功能实现对 Bean 的依赖管理，使用配置方式来达到与业务代码和框架代码的分离。其主要的接口和类关系如下所示：</p>
 <img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211109160858.png" style="zoom:50%;" />
 
