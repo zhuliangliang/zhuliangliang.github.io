@@ -20,28 +20,37 @@
     var CONFIG = {"hostname":"zhuliangliang.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="朱亮亮">
-<meta property="og:url" content="http://zhuliangliang.github.io/index.html">
+  <meta name="description" content="故障反馈某天运维反馈某个线上集群多个节点夜间 0 点左右 CPU 被打满，0-4 点 prometheus 的监控数据都没有采集到，在 4 点左右自动恢复。机器整体整体的负载如下：   故障现象这个集群上部署了多个服务，我们的服务作为一个中间件提供 rpc 调用。观察我们服务的监控，发现在 0 点左右 cpu 使用率和 jvm 线程数都暴涨。     故障分析我们首先怀疑可能是 0 点左右服务请求">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次 Log4j2 引起线上服务 CPU 占用过高问题排查">
+<meta property="og:url" content="http://zhuliangliang.github.io/2021/11/20/cpu_high_load/index.html">
 <meta property="og:site_name" content="朱亮亮">
+<meta property="og:description" content="故障反馈某天运维反馈某个线上集群多个节点夜间 0 点左右 CPU 被打满，0-4 点 prometheus 的监控数据都没有采集到，在 4 点左右自动恢复。机器整体整体的负载如下：   故障现象这个集群上部署了多个服务，我们的服务作为一个中间件提供 rpc 调用。观察我们服务的监控，发现在 0 点左右 cpu 使用率和 jvm 线程数都暴涨。     故障分析我们首先怀疑可能是 0 点左右服务请求">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/wecom-temp-61c81f2a4665df83514ccc1009024b83.png">
+<meta property="og:image" content="http://zhuliangliang.github.io/Users/zhuliangliang/Library/Application%20Support/typora-user-images/image-20211120100814518.png">
+<meta property="og:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/20211120100834.png">
+<meta property="article:published_time" content="2021-11-20T00:00:00.000Z">
+<meta property="article:modified_time" content="2021-11-20T08:44:41.285Z">
 <meta property="article:author" content="ZhuLiangliang">
+<meta property="article:tag" content="问题排查">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/wecom-temp-61c81f2a4665df83514ccc1009024b83.png">
 
-<link rel="canonical" href="http://zhuliangliang.github.io/">
+<link rel="canonical" href="http://zhuliangliang.github.io/2021/11/20/cpu_high_load/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>朱亮亮</title>
+  <title>一次 Log4j2 引起线上服务 CPU 占用过高问题排查 | 朱亮亮</title>
   
 
 
@@ -155,9 +164,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -173,10 +183,9 @@
       <meta itemprop="name" content="朱亮亮">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/20/cpu_high_load/" class="post-title-link" itemprop="url">一次 Log4j2 引起线上服务 CPU 占用过高问题排查</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          一次 Log4j2 引起线上服务 CPU 占用过高问题排查
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -208,7 +217,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="故障反馈"><a href="#故障反馈" class="headerlink" title="故障反馈"></a>故障反馈</h1><p>某天运维反馈某个线上集群多个节点夜间 0 点左右 CPU 被打满，0-4 点 prometheus 的监控数据都没有采集到，在 4 点左右自动恢复。机器整体整体的负载如下：</p>
+        <h1 id="故障反馈"><a href="#故障反馈" class="headerlink" title="故障反馈"></a>故障反馈</h1><p>某天运维反馈某个线上集群多个节点夜间 0 点左右 CPU 被打满，0-4 点 prometheus 的监控数据都没有采集到，在 4 点左右自动恢复。机器整体整体的负载如下：</p>
 <img src="https://gitee.com/zhuxiaoxiaojian/picgo-img/raw/master/img/wecom-temp-61c81f2a4665df83514ccc1009024b83.png" style="zoom:50%;" />
 
 <h1 id="故障现象"><a href="#故障现象" class="headerlink" title="故障现象"></a>故障现象</h1><p>这个集群上部署了多个服务，我们的服务作为一个中间件提供 rpc 调用。观察我们服务的监控，发现在 0 点左右 cpu 使用率和 jvm 线程数都暴涨。</p>
@@ -259,552 +268,33 @@
 <p>然后修改 log4j2.xml 配置</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Configuration</span> <span class="attr">status</span>=<span class="string">"warn"</span> <span class="attr">name</span>=<span class="string">"MyApp"</span> <span class="attr">packages</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Appenders</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">File</span> <span class="attr">name</span>=<span class="string">"MyFile"</span> <span class="attr">fileName</span>=<span class="string">"logs/app.log"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Pattern</span>&gt;</span>%d %p %c&#123;1.&#125; [%t] %m%n<span class="tag">&lt;/<span class="name">Pattern</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">PatternLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">File</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Async</span> <span class="attr">name</span>=<span class="string">"Async"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"MyFile"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Async</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Appenders</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Loggers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Root</span> <span class="attr">level</span>=<span class="string">"error"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">AppenderRef</span> <span class="attr">ref</span>=<span class="string">"Async"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Root</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Loggers</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/" rel="tag"># 问题排查</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/12/https/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuLiangliang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="朱亮亮">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/12/https/" class="post-title-link" itemprop="url">为自定义域名的 GitHub Pages 添加 SSL 支持</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-12 14:00:00" itemprop="dateCreated datePublished" datetime="2021-11-12T14:00:00+08:00">2021-11-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index"><span itemprop="name">其它</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>很早就看到 <a href="https://github.blog/2018-05-01-github-pages-custom-domains-https/" target="_blank" rel="noopener">GitHub Pages 支持 HTTPS</a> 了，一直懒得去给博客配置，今天尝试去配置了下，但发现有问题：我的博客有 CNAME，而 GitHub HTTPS 是不支持自定义域名的。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/12/https/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/11/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuLiangliang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="朱亮亮">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/11/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/" class="post-title-link" itemprop="url">Spring ApplicationContext 和 BeanFactory</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-11 19:00:00" itemprop="dateCreated datePublished" datetime="2021-11-11T19:00:00+08:00">2021-11-11</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Spring 的 <code>BeanFactory</code> 和 <code>ApplicationContext</code> 所处的位置有所不同，使用的场景也有区别，但两者有着千丝万缕的联系。</p>
-<h3 id="BeanFactory"><a href="#BeanFactory" class="headerlink" title="BeanFactory"></a>BeanFactory</h3><p><code>BeanFactory</code> 在 Spring-Beans 模块中，是整个 Spring 容器的核心，也正是 <code>BeanFactory</code> 才让 Spring 成为一个容器，帮助 Spring 管理 Bean，并提供 DI 功能实现对 Bean 的依赖管理，使用配置方式来达到与业务代码和框架代码的分离。其主要的接口和类关系如下所示：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/11/Spring%20BeanFactory%20%E5%92%8C%20ApplicationContext/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/12/https/" rel="prev" title="为自定义域名的 GitHub Pages 添加 SSL 支持">
+      <i class="fa fa-chevron-left"></i> 为自定义域名的 GitHub Pages 添加 SSL 支持
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/04/SpringBoot%20%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuLiangliang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="朱亮亮">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/04/SpringBoot%20%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3/" class="post-title-link" itemprop="url">SpringBoot 核心注解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-04 20:00:00" itemprop="dateCreated datePublished" datetime="2021-11-04T20:00:00+08:00">2021-11-04</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>我们在写 SpringBoot 程序的时候，总要写一个主程序，这个主程序最大的特点就是在其类上包含了一个<code>@SpringBootApplication</code>注解，这个正式 SpringBoot 的核心。</p>
-<p><code>@SpringBootApplication</code> 注解是一个组合注解，主要包含如下三个注解</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span></span><br><span class="line"><span class="meta">@ComponentScan</span></span><br></pre></td></tr></table></figure>
-
-<p>其中，<code>@SpringBootConfiguration</code> 注解包含 <code>@Configuration</code> 注解，实际上两者基本没啥区别。SpringBoot 推荐使用 JavaConfig 的方式为 SpringBoot 来配置容器。启动类使用 <code>@Configuration</code> 注解标记之后，本身就是一个 IoC 容器的配置类了。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/04/SpringBoot%20%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/11/01/SpringBoot%20%E4%BE%9D%E8%B5%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuLiangliang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="朱亮亮">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/01/SpringBoot%20%E4%BE%9D%E8%B5%96/" class="post-title-link" itemprop="url">SpringBoot pom 依赖</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-01 21:12:00" itemprop="dateCreated datePublished" datetime="2021-11-01T21:12:00+08:00">2021-11-01</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>我们在开发一个 SpringBoot 项目的时候，首先要添加如下父依赖，例如：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> <span class="comment">&lt;!-- lookup parent from repository --&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>按住 Ctrl/Command键 + 鼠标左键，我们可以看到这个 <code>pom.xml</code> 里面主要包含 resource 配置，如下：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/11/01/SpringBoot%20%E4%BE%9D%E8%B5%96/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2021/09/08/go_get_problem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuLiangliang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="朱亮亮">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/09/08/go_get_problem/" class="post-title-link" itemprop="url">go get installing executables with 'go get' in module mode is deprecated.</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-09-08 10:00:00" itemprop="dateCreated datePublished" datetime="2021-09-08T10:00:00+08:00">2021-09-08</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近开始学习 GO 相关的知识，在入门 <a href="https://github.com/cloudwego/kitex/blob/develop/docs/guide/getting_started_cn.md" target="_blank" rel="noopener">kitex </a> 时，需要使用 go get 安装，虽然安装成功了，但是有如下提示</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/09/08/go_get_problem/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2020/05/10/catalina-alfred-multiple-apps/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuLiangliang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="朱亮亮">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/10/catalina-alfred-multiple-apps/" class="post-title-link" itemprop="url">MacOS Cataline Alfred 出现相同的 app</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-10 10:00:00" itemprop="dateCreated datePublished" datetime="2020-05-10T10:00:00+08:00">2020-05-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E8%B0%88/" itemprop="url" rel="index"><span itemprop="name">杂谈</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Mac 上 Catalina 的更新提示了很久，决定今天更新下，但发现更新完毕后，使用 Alfred 的时候，同一个 app 会出现在不同的目录：</p>
-<p><code>/System/Volumes/Data/Applications</code> </p>
-<p><code>/Applications</code></p>
-<p>解决办法如下：在 Alfred 中输入 <code>reload</code> 重新加载即可。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://zhuliangliang.github.io/2020/05/02/hexo_theme_next/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="ZhuLiangliang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="朱亮亮">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/02/hexo_theme_next/" class="post-title-link" itemprop="url">博客使用新的主题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-02 20:00:00" itemprop="dateCreated datePublished" datetime="2020-05-02T20:00:00+08:00">2020-05-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E8%B0%88/" itemprop="url" rel="index"><span itemprop="name">杂谈</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近看到一个新的主题 <a href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="noopener">next</a>，觉得还不错，当然是拿来用了🙂，下面是在 hexo 中配置的方法。</p>
-<ol>
-<li>打开 hexo 所在目录</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">打开 hexo 所在目录</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> hexo</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls</span></span><br><span class="line">_config.yml db.json debug.log package.json public  scripts source themes</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>下载主题</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir themes/next</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> curl -s https://api.github.com/repos/iissnan/hexo-theme-next/releases/latest | grep tarball_url | cut -d <span class="string">'"'</span> -f 4 | wget -i - -O- | tar -zx -C themes/next --strip-components=1</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/05/02/hexo_theme_next/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
@@ -857,6 +347,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#故障反馈"><span class="nav-number">1.</span> <span class="nav-text">故障反馈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#故障现象"><span class="nav-number">2.</span> <span class="nav-text">故障现象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#故障分析"><span class="nav-number">3.</span> <span class="nav-text">故障分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方案"><span class="nav-number">4.</span> <span class="nav-text">解决方案</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
